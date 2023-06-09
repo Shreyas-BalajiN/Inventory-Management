@@ -1,4 +1,3 @@
 # Team2-Inventory_Management
 
-# Team Members
-B00938588
+Bhargav Kanodiya B00938588
