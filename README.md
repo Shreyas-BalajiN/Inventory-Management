@@ -1,5 +1,7 @@
 # Team2-Inventory_Management
 
+# Team Members
+Bhargav Kanodiya B00938588
 
 
 ## Getting started
