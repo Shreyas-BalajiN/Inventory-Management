@@ -9,11 +9,12 @@ function addZone(value) {
   zones.push(value);
 }
 
-function ZoneList() {
+function ZoneList(props) {
   const [modalShow, setModalShow] = React.useState(false);
   const [activeItem, setActiveItem] = useState(null);
 
-  const handleClick = (index) => {
+  const handleClick = (el, index) => {
+    props.zoneSetter(el);
     setActiveItem(index);
   };
   // const alertClicked = (clickedItem) => {
@@ -31,7 +32,7 @@ function ZoneList() {
             <ListGroup.Item
               key={index}
               action
-              onClick={() => handleClick(index)}
+              onClick={() => handleClick(el, index)}
               className={activeItem === index ? "active" : ""}
             >
               {el}

@@ -5,15 +5,15 @@ import InputGroup from "react-bootstrap/InputGroup";
 import "./../styles/ItemsList.css";
 import Table from "react-bootstrap/Table";
 
-function ItemsList() {
+function ItemsList(props) {
   const [searchItem, setSearchItem] = useState("");
   const dataList = [
-    { name: "Item 1", quantity: "30", zone: "Zone1" },
-    { name: "Item 2", quantity: "15", zone: "Zone2" },
-    { name: "Item 3", quantity: "50", zone: "Zone1" },
-    { name: "Item 4", quantity: "10", zone: "Zone3" },
-    { name: "Item 5", quantity: "20", zone: "Zone2" },
-    { name: "Item 6", quantity: "5", zone: "Zone3" },
+    { name: "Item 1", quantity: "30", zone: "Zone 1" },
+    { name: "Item 2", quantity: "15", zone: "Zone 2" },
+    { name: "Item 3", quantity: "50", zone: "Zone 1" },
+    { name: "Item 4", quantity: "10", zone: "Zone 3" },
+    { name: "Item 5", quantity: "20", zone: "Zone 2" },
+    { name: "Item 6", quantity: "5", zone: "Zone 3" },
   ];
   const [items, setItems] = useState(dataList);
 
@@ -67,21 +67,40 @@ function ItemsList() {
           </thead>
           <tbody>
             {items.map((el) => {
-              return (
-                <tr>
-                  <td>{el.zone}</td>
-                  <td>{el.name}</td>
-                  <td>{el.quantity}</td>
-                  <td>
-                    <Button
-                      variant="danger"
-                      onClick={() => deleteItem(el.zone, el.name)}
-                    >
-                      Delete
-                    </Button>
-                  </td>
-                </tr>
-              );
+              if (props.selectedZone === "") {
+                return (
+                  <tr>
+                    <td>{el.zone}</td>
+                    <td>{el.name}</td>
+                    <td>{el.quantity}</td>
+                    <td>
+                      <Button
+                        variant="danger"
+                        onClick={() => deleteItem(el.zone, el.name)}
+                      >
+                        Delete
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              }
+              if (el.zone === props.selectedZone) {
+                return (
+                  <tr>
+                    <td>{el.zone}</td>
+                    <td>{el.name}</td>
+                    <td>{el.quantity}</td>
+                    <td>
+                      <Button
+                        variant="danger"
+                        onClick={() => deleteItem(el.zone, el.name)}
+                      >
+                        Delete
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              }
             })}
           </tbody>
         </Table>

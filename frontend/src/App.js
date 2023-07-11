@@ -1,11 +1,11 @@
-import ZoneList from "./components/ZoneList";
-import ItemsList from "./components/ItemsList";
+import Store from "./pages/Store";
 import "./App.css";
+import Navbar from "./components/Navbar";
 function App() {
   return (
     <div className="App">
-      <ZoneList />
-      <ItemsList />
+      <Navbar />
+      <Store />
     </div>
   );
 }
