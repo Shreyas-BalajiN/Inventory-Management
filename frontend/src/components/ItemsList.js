@@ -4,9 +4,10 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import "./../styles/ItemsList.css";
 import Table from "react-bootstrap/Table";
-
+import AddItemModel from "./AddItemModel";
 function ItemsList(props) {
   const [searchItem, setSearchItem] = useState("");
+  const [modelShow,setModelShow] = React.useState(false);
   const dataList = [
     { name: "Item 1", quantity: "30", zone: "Zone 1" },
     { name: "Item 2", quantity: "15", zone: "Zone 2" },
@@ -16,7 +17,10 @@ function ItemsList(props) {
     { name: "Item 6", quantity: "5", zone: "Zone 3" },
   ];
   const [items, setItems] = useState(dataList);
-
+  function addItem(value){
+    items.push(value);
+    setItems(items);
+  }
   function handleSearch() {
     if (!(searchItem === "")) {
       const newItemsList = items.filter((el) => el.name === searchItem);
@@ -36,7 +40,17 @@ function ItemsList(props) {
 
   return (
     <div className="itemsList">
+      <div className="header">
       <h1 className="storeHeading">Store Name</h1>
+      <Button variant="primary" class="btn btn-primary float-right" onClick={()=>setModelShow(true)}>
+        Add Items
+      </Button>
+      </div>
+      <AddItemModel
+      show={modelShow}
+      itemAdder={addItem}
+      onHide={()=>setModelShow(false)}
+      ></AddItemModel>
       <InputGroup className="mb-3">
         <Form.Control
           placeholder="Search Item"
