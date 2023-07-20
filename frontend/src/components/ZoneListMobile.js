@@ -10,7 +10,7 @@ function addZone(value) {
   zones.push(value);
 }
 
-function ZoneList(props) {
+function ZoneListMobile(props) {
   const [modalShow, setModalShow] = React.useState(false);
   const [activeItem, setActiveItem] = useState(5000);
 
@@ -22,13 +22,13 @@ function ZoneList(props) {
   const deleteZone = () => {
     // Ensure there is an active zone to delete
     if (activeItem !== null && activeItem !== 5000) {
-      zones.splice(activeItem, 1);
-      setActiveItem(5000);
+      zones.splice(activeItem, 1); // Remove the zone from the array
+      setActiveItem(5000); // Reset activeItem to "All Zones"
     }
   };
 
   return (
-    <div className="zoneSection">
+    <div className="zoneSectionMobile">
       <Button variant="primary" onClick={() => setModalShow(true)}>
         Add Zones
       </Button>
@@ -68,4 +68,4 @@ function ZoneList(props) {
   );
 }
 
-export default ZoneList;
+export default ZoneListMobile;
