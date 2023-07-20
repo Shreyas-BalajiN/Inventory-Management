@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import ZoneList from "./../components/ZoneList";
 import ItemsList from "./../components/ItemsList";
 import "./../styles/Store.css";
+import Navbar from "../components/Navbar";
 function Store() {
   const [zone, setZone] = useState("");
 
@@ -10,9 +11,12 @@ function Store() {
     setZone(z);
   };
   return (
+    <div>
+           <Navbar />
     <div className="store">
       <ZoneList zoneSetter={zoneSetter} />
       <ItemsList selectedZone={zone} />
+    </div>
     </div>
   );
 }
