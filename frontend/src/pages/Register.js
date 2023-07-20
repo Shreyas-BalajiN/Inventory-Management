@@ -24,7 +24,7 @@ export default function Register() {
     .then((resp)=>{
       console.log(resp.data)
       if(resp.data.message==="CREATED"){
-        swal("Registration Successful, Please Log In")
+        swal("Registration Successful, Log In to access your inventory")
         navigate('/')
       }
     })
