@@ -15,7 +15,6 @@ function addZone(value) {
 function ZoneListMobile(props) {
   const [modalShow, setModalShow] = React.useState(false);
   const [activeItem, setActiveItem] = useState(5000);
-
   const handleClick = (el, index) => {
     props.zoneSetter(el);
     setActiveItem(index);
@@ -27,30 +26,65 @@ function ZoneListMobile(props) {
     const payload = {
       name: name,
       email: email,
-      zoneName: el,
+      zoneName: props.zones[activeItem],
     };
-    // Ensure there is an active zone to delete
-    if (activeItem !== null && activeItem !== 5000) {
-      props.zones.splice(activeItem, 1); // Remove the zone from the array
-      //delete api
-      await axios
-        .post(
-          "https://custom-inventory-po3oww4fuq-wl.a.run.app/zone/delete",
-          payload
-        )
-        .then((resp) => {
-          if (resp.data.message === "OK") {
-            console.log(resp.data.data);
-            // setZones(resp.data.data.zones);
-          }
-        })
-        .catch((error) => {
-          Swal("Account doesn't exist");
-        });
-      setActiveItem(5000); // Reset activeItem to "All Zones"
-    }
+    console.log(payload);
+    Swal.fire({
+      title: "Do you want to delete the zone?",
+      showDenyButton: true,
+      showCancelButton: false,
+      confirmButtonText: "Delete",
+      denyButtonText: `No`,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (activeItem !== null && activeItem !== 5000) {
+          props.zones.splice(activeItem, 1); // Remove the zone from the array
+          //delete api
+          axios
+            .post(
+              "https://custom-inventory-po3oww4fuq-wl.a.run.app/zone/delete",
+              payload
+            )
+            .then((resp) => {
+              if (resp.data.message === "OK") {
+                console.log(resp.data);
+                // setZones(resp.data.data.zones);
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+              Swal("Account doesn't exist");
+            });
+          setActiveItem(5000); // Reset activeItem to "All Zones"
+        }
+        Swal.fire("Deleted!", "", "success");
+      }
+    });
   };
 
+  async function addZone(value) {
+    props.zones.push(value);
+    const name = Cookies.get("name");
+    const email = Cookies.get("email");
+    const payload = {
+      name: name,
+      email: email,
+      zoneName: value,
+    };
+    await axios
+      .post(
+        "https://custom-inventory-po3oww4fuq-wl.a.run.app/zone/create",
+        payload
+      )
+      .then((res) => {
+        console.log("Zone adder is working fine....");
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+        alert("Error");
+      });
+  }
   return (
     <div className="zoneSectionMobile">
       <Button variant="primary" onClick={() => setModalShow(true)}>
