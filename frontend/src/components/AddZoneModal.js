@@ -3,18 +3,16 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import { useState } from "react";
+import axios from "axios";
 
 function AddZoneModal(props) {
   const [zoneName, setZoneName] = useState("");
 
-  const handleAddZone = () => {
-    console.log("Zone name:", zoneName);
+  const handleAddZone = async () => {
     props.zoneAdder(zoneName);
 
     setZoneName("");
     props.onHide();
-
-    alert(`Zone: ${zoneName} added Successfully!`);
   };
 
   return (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -6,23 +6,12 @@ import "./../styles/ItemsList.css";
 import Table from "react-bootstrap/Table";
 import Swal from "sweetalert2";
 import { BsFillArrowDownCircleFill } from "react-icons/bs";
+import Cookies from "js-cookie";
+import axios from "axios";
+
 function ItemsList(props) {
   const [searchItem, setSearchItem] = useState("");
-  const dataList = [
-    { name: "Item 1", quantity: "1", zone: "Zone 1" },
-    { name: "Item 2", quantity: "15", zone: "Zone 2" },
-    { name: "Item 3", quantity: "50", zone: "Zone 1" },
-    { name: "Item 4", quantity: "10", zone: "Zone 3" },
-    { name: "Item 5", quantity: "20", zone: "Zone 2" },
-    { name: "Item 6", quantity: "5", zone: "Zone 3" },
-    { name: "Item 1", quantity: "30", zone: "Zone 1" },
-    { name: "Item 2", quantity: "15", zone: "Zone 2" },
-    { name: "Item 3", quantity: "50", zone: "Zone 1" },
-    { name: "Item 4", quantity: "10", zone: "Zone 3" },
-    { name: "Item 5", quantity: "20", zone: "Zone 2" },
-    { name: "Item 6", quantity: "5", zone: "Zone 3" },
-  ];
-  const [items, setItems] = useState(dataList);
+  const [items, setItems] = useState(props.items);
 
   function handleSearch() {
     if (!(searchItem === "")) {
@@ -31,18 +20,45 @@ function ItemsList(props) {
       }
       setItems(newItemsList);
     } else {
-      setItems(dataList);
+      setItems(props.items);
     }
   }
-  function deleteItem(zone, item) {
+
+  useEffect(() => {
+    console.log(props.items);
+    setItems(props.items);
+  }, [props.items]);
+
+  const fetchUpdatedItems = () => {
+    const name = Cookies.get("name");
+    const email = Cookies.get("email");
+    const payload = {
+      name: name,
+      email: email,
+    };
+    axios
+      .post(
+        "https://custom-inventory-po3oww4fuq-wl.a.run.app/store/open",
+        payload
+      )
+      .then((response) => {
+        console.log("Idhaaaarrr");
+        // console.log(response.data);
+        setItems(response.data.data.items);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  function deleteItem(zone, item, count) {
     Swal.fire({
-      title: "Do you want to save the changes?",
+      title: `Do you want to delete the item: ${item}?`,
       showDenyButton: true,
       showCancelButton: false,
       confirmButtonText: "Yes",
       denyButtonText: `No`,
     }).then((result) => {
-      /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
         Swal.fire(`Deleted ${item} from ${zone}`, "", "success");
         const newItemsList = items.filter(
@@ -50,11 +66,110 @@ function ItemsList(props) {
         );
         console.log(`Deleting ${item} in zone ${zone}`);
         setItems(newItemsList);
-      } else if (result.isDenied) {
+        const name = Cookies.get("name");
+        const email = Cookies.get("email");
+        const payload = {
+          name: name,
+          email: email,
+          zoneName: zone,
+          itemName: item,
+          count: count,
+        };
+        axios
+          .post(
+            "https://custom-inventory-po3oww4fuq-wl.a.run.app/item/delete",
+            payload
+          )
+          .then((resp) => {
+            if (resp.data.message === "OK") {
+              console.log(resp.data);
+              fetchUpdatedItems();
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+            Swal("Account doesn't exist");
+          });
       }
     });
   }
+  function handleDecreaseQuantity(zone, item, count) {
+    console.log("reached here -");
+    const updatedItems = items.map((el) => {
+      if (el.itemName === item && el.zoneName === zone) {
+        const newQuantity = parseInt(el.count, 10) - 1;
+        const name = Cookies.get("name");
+        const email = Cookies.get("email");
+        const payload = {
+          name: name,
+          email: email,
+          zoneName: zone,
+          itemName: item,
+          count: newQuantity,
+        };
 
+        axios
+          .post(
+            "https://custom-inventory-po3oww4fuq-wl.a.run.app/item/update",
+            payload
+          )
+          .then((response) => {
+            console.log("Idhaaaarrr");
+            const updatedItemsList = items.map((item) =>
+              item.itemName === el.itemName && item.zoneName === el.zoneName
+                ? { ...item, count: newQuantity }
+                : item
+            );
+            setItems(updatedItemsList);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        return { ...el, quantity: newQuantity };
+      }
+      return el;
+    });
+    setItems(updatedItems);
+  }
+
+  function handleIncreaseQuantity(zone, item, count) {
+    const updatedItems = items.map((el) => {
+      if (el.itemName === item && el.zoneName === zone) {
+        const newQuantity = parseInt(el.count, 10) + 1;
+        const name = Cookies.get("name");
+        const email = Cookies.get("email");
+        const payload = {
+          name: name,
+          email: email,
+          zoneName: zone,
+          itemName: item,
+          count: newQuantity,
+        };
+
+        console.log(payload);
+        axios
+          .post(
+            "https://custom-inventory-po3oww4fuq-wl.a.run.app/item/update",
+            payload
+          )
+          .then((response) => {
+            console.log("Idhaaaarrr");
+            const updatedItemsList = items.map((item) =>
+              item.itemName === el.itemName && item.zoneName === el.zoneName
+                ? { ...item, count: newQuantity }
+                : item
+            );
+            setItems(updatedItemsList);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        return { ...el, quantity: newQuantity };
+      }
+      return el;
+    });
+    setItems(updatedItems);
+  }
   return (
     <div className="itemsList">
       <h1 className="storeHeading">General Store</h1>
@@ -95,8 +210,8 @@ function ItemsList(props) {
               if (props.selectedZone === "All Zones") {
                 return (
                   <tr>
-                    <td>{el.zone}</td>
-                    <td>{el.name}</td>
+                    <td>{el.zoneName}</td>
+                    <td>{el.itemName}</td>
                     <td>
                       <div
                         style={{
@@ -116,12 +231,19 @@ function ItemsList(props) {
                             textAlign: "center",
                           }}
                           variant="secondary"
+                          onClick={() =>
+                            handleDecreaseQuantity(
+                              el.zoneName,
+                              el.itemName,
+                              el.count
+                            )
+                          }
                         >
                           -
                         </Button>
-                        <div>{el.quantity}</div>
+                        <div>{el.count}</div>
                         <div>
-                          {el.quantity < 3 ? (
+                          {el.count < 3 ? (
                             <BsFillArrowDownCircleFill title="Running low" />
                           ) : (
                             <></>
@@ -138,6 +260,13 @@ function ItemsList(props) {
                             height: "2em",
                             textAlign: "center",
                           }}
+                          onClick={() =>
+                            handleIncreaseQuantity(
+                              el.zoneName,
+                              el.itemName,
+                              el.count
+                            )
+                          }
                         >
                           +
                         </Button>
@@ -146,7 +275,9 @@ function ItemsList(props) {
                     <td>
                       <Button
                         variant="danger"
-                        onClick={() => deleteItem(el.zone, el.name)}
+                        onClick={() =>
+                          deleteItem(el.zoneName, el.itemName, el.count)
+                        }
                       >
                         Delete
                       </Button>
@@ -154,11 +285,11 @@ function ItemsList(props) {
                   </tr>
                 );
               }
-              if (el.zone === props.selectedZone) {
+              if (el.zoneName === props.selectedZone) {
                 return (
                   <tr>
-                    <td>{el.zone}</td>
-                    <td>{el.name}</td>
+                    <td>{el.zoneName}</td>
+                    <td>{el.itemName}</td>
                     <td>
                       <div
                         style={{
@@ -177,12 +308,19 @@ function ItemsList(props) {
                             textAlign: "center",
                           }}
                           variant="secondary"
+                          onClick={() =>
+                            handleDecreaseQuantity(
+                              el.zoneName,
+                              el.itemName,
+                              el.count
+                            )
+                          }
                         >
                           -
                         </Button>
-                        <div>{el.quantity}</div>
+                        <div>{el.count}</div>
                         <div>
-                          {el.quantity < 3 ? (
+                          {el.count < 3 ? (
                             <BsFillArrowDownCircleFill title="Running low" />
                           ) : (
                             <></>
@@ -199,6 +337,13 @@ function ItemsList(props) {
                             textAlign: "center",
                           }}
                           variant="secondary"
+                          onClick={() =>
+                            handleIncreaseQuantity(
+                              el.zoneName,
+                              el.itemName,
+                              el.count
+                            )
+                          }
                         >
                           +
                         </Button>
@@ -207,7 +352,9 @@ function ItemsList(props) {
                     <td>
                       <Button
                         variant="danger"
-                        onClick={() => deleteItem(el.zone, el.name)}
+                        onClick={() =>
+                          deleteItem(el.zoneName, el.itemName, el.count)
+                        }
                       >
                         Delete
                       </Button>

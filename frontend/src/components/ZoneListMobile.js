@@ -3,11 +3,13 @@ import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
 import "./../styles/ZoneList.css";
 import AddZoneModal from "./AddZoneModal";
-
-const zones = ["Zone 1", "Zone 2", "Zone 3"];
+import Swal from "sweetalert";
+import Cookies from "js-cookie";
+import axios from "axios";
 
 function addZone(value) {
-  zones.push(value);
+  // zones.push(value);
+  //code to add zones
 }
 
 function ZoneListMobile(props) {
@@ -19,10 +21,32 @@ function ZoneListMobile(props) {
     setActiveItem(index);
   };
 
-  const deleteZone = () => {
+  const deleteZone = async (el) => {
+    const name = Cookies.get("name");
+    const email = Cookies.get("email");
+    const payload = {
+      name: name,
+      email: email,
+      zoneName: el,
+    };
     // Ensure there is an active zone to delete
     if (activeItem !== null && activeItem !== 5000) {
-      zones.splice(activeItem, 1); // Remove the zone from the array
+      props.zones.splice(activeItem, 1); // Remove the zone from the array
+      //delete api
+      await axios
+        .post(
+          "https://custom-inventory-po3oww4fuq-wl.a.run.app/zone/delete",
+          payload
+        )
+        .then((resp) => {
+          if (resp.data.message === "OK") {
+            console.log(resp.data.data);
+            // setZones(resp.data.data.zones);
+          }
+        })
+        .catch((error) => {
+          Swal("Account doesn't exist");
+        });
       setActiveItem(5000); // Reset activeItem to "All Zones"
     }
   };
@@ -41,7 +65,7 @@ function ZoneListMobile(props) {
         >
           All Zones
         </ListGroup.Item>
-        {zones.map((el, index) => {
+        {props.zones.map((el, index) => {
           return (
             <ListGroup.Item
               key={index}
@@ -55,7 +79,7 @@ function ZoneListMobile(props) {
         })}
       </ListGroup>
       {activeItem !== 5000 && (
-        <Button variant="danger" onClick={deleteZone}>
+        <Button variant="danger" onClick={(el) => deleteZone(el)}>
           Delete Zone
         </Button>
       )}
