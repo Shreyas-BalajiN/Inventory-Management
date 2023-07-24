@@ -2,6 +2,7 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
+import axios from "axios";
 import { useState } from "react";
 
 function AddItemModel(props) {
@@ -17,11 +18,27 @@ function AddItemModel(props) {
         name:itemName,
         quantity
     });
-
+    const payload = {
+      name:props.name,
+      email:props.email,
+      zoneName,
+      itemName,
+      count:quantity
+    }
+    axios.post("https://custom-inventory-po3oww4fuq-wl.a.run.app/item/add",payload)
+    .then((res)=>{
+      if(res.data.message=="OK"){
+        props.onHide();
+        alert(`Item: ${itemName} added Successfully!`);
+      }
+    })
+    .catch((error)=>{
+      alert(`Item not added! Something went wrong`);
+    })
     setItemName("");
-    props.onHide();
+    
 
-    alert(`Item: ${itemName} added Successfully!`);
+    
   };
 
   return (
