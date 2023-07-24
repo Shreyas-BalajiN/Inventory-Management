@@ -3,44 +3,30 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import axios from "axios";
-import { useState } from "react";
+import { useState,useEffect } from "react";
+import Cookies from "js-cookie";
 
 function AddItemModel(props) {
   const[zoneName,setZoneName] = useState(props.zoneName);
+  const [zones,setZones]=useState(props.zones || []);
   const [itemName, setItemName] = useState("");
-  const [quantity,setQuantity] = useState("");
-
-  const handleAddItems = () => {
-
-    console.log("Item name:", itemName);
-    props.itemAdder({
-        zone:zoneName,
-        name:itemName,
-        quantity
-    });
-    const payload = {
-      name:props.name,
-      email:props.email,
+  const [count,setCount] = useState("");
+  console.log(zones)
+  const handleAddItems = async() => {
+    let itemObj={
       zoneName,
       itemName,
-      count:quantity
+      count
     }
-    axios.post("https://custom-inventory-po3oww4fuq-wl.a.run.app/item/add",payload)
-    .then((res)=>{
-      if(res.data.message=="OK"){
-        props.onHide();
-        alert(`Item: ${itemName} added Successfully!`);
-      }
-    })
-    .catch((error)=>{
-      alert(`Item not added! Something went wrong`);
-    })
-    setItemName("");
-    
-
-    
+   props.itemAdder(itemObj);
+   setZoneName(props.zoneName);
+   setItemName('');
+   setCount('');
+   props.onHide();
   };
-
+  useEffect(() => {
+    setZones(props.zones);
+  }, [props.zones]);
   return (
     <Modal
     {...props}
@@ -57,11 +43,17 @@ function AddItemModel(props) {
       <Form.Group controlId="formZoneName" className="mb-3">
         <Form.Label>Zone Name</Form.Label>
         <Form.Control
-          type="text"
-          placeholder="Zone Name"
-          value={zoneName}
-          onChange={(e) => setZoneName(e.target.value)}
-        />
+            as="select"
+            value={zoneName}
+            onChange={(e) => setZoneName(e.target.value)}
+          >
+            <option value="">Select a Zone</option>
+            {zones.map((zone, index) => (
+              <option key={index} value={zone}>
+                {zone}
+              </option>
+            ))}
+          </Form.Control>
       </Form.Group>
 
       <Form.Group controlId="formItemName" className="mb-3">
@@ -74,13 +66,13 @@ function AddItemModel(props) {
         />
       </Form.Group>
 
-      <Form.Group controlId="formQuantity" className="mb-3">
-        <Form.Label>Quantity</Form.Label>
+      <Form.Group controlId="formCount" className="mb-3">
+        <Form.Label>Count</Form.Label>
         <Form.Control
           type="text"
           placeholder="Quantity"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
+          value={count}
+          onChange={(e) => setCount(e.target.value)}
         />
       </Form.Group>
 
