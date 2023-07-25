@@ -14,3 +14,20 @@
 .no-availability {
   text-align: center;
 }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#hide-on-mobile {
+  display: none; /* By default, display the button */
+}
+
+@media (max-width: 767px) {
+  #hide-on-mobile {
+    display: block;
+    margin: 0.6em;
+  }
+}

@@ -1,13 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
 import "./../styles/ZoneList.css";
 import AddZoneModal from "./AddZoneModal";
-import Swal from "sweetalert2";
+import Swal from "sweetalert";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-function ZoneList(props) {
+function addZone(value) {
+  // zones.push(value);
+  //code to add zones
+}
+
+function ZoneListMobile(props) {
   const [modalShow, setModalShow] = React.useState(false);
   const [activeItem, setActiveItem] = useState(5000);
   const handleClick = (el, index) => {
@@ -81,7 +86,7 @@ function ZoneList(props) {
       });
   }
   return (
-    <div className="zoneSection">
+    <div className="zoneSectionMobile">
       <Button variant="primary" onClick={() => setModalShow(true)}>
         Add Zones
       </Button>
@@ -108,7 +113,7 @@ function ZoneList(props) {
         })}
       </ListGroup>
       {activeItem !== 5000 && (
-        <Button variant="danger" onClick={deleteZone}>
+        <Button variant="danger" onClick={(el) => deleteZone(el)}>
           Delete Zone
         </Button>
       )}
@@ -121,4 +126,4 @@ function ZoneList(props) {
   );
 }
 
-export default ZoneList;
+export default ZoneListMobile;
