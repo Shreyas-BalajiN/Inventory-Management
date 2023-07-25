@@ -114,7 +114,6 @@ function ItemsList(props) {
             payload
           )
           .then((response) => {
-            console.log("Idhaaaarrr");
             const updatedItemsList = items.map((item) =>
               item.itemName === el.itemName && item.zoneName === el.zoneName
                 ? { ...item, count: newQuantity }

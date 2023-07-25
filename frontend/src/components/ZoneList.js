@@ -53,6 +53,7 @@ function ZoneList(props) {
           setActiveItem(5000); // Reset activeItem to "All Zones"
         }
         Swal.fire("Deleted!", "", "success");
+        window.location.reload();
       }
     });
   };
