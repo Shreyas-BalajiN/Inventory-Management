@@ -8,11 +8,15 @@ import Swal from "sweetalert2";
 import { BsFillArrowDownCircleFill } from "react-icons/bs";
 import Cookies from "js-cookie";
 import axios from "axios";
+import AddItemModel from "./AddItemModel";
 
 function ItemsList(props) {
   const [searchItem, setSearchItem] = useState("");
   const [items, setItems] = useState(props.items);
-
+  const [zones,setZones]= useState(props.zones);
+  const [modelShow,setModelShow] = React.useState(false);
+  console.log(zones);
+  console.log(items)
   function handleSearch() {
     if (!(searchItem === "")) {
       const newItemsList = items.filter((el) => el.name.includes(searchItem));
@@ -27,7 +31,8 @@ function ItemsList(props) {
   useEffect(() => {
     console.log(props.items);
     setItems(props.items);
-  }, [props.items]);
+    setZones(props.zones);
+  }, [props.items,props.zones]);
 
   const fetchUpdatedItems = () => {
     const name = Cookies.get("name");
@@ -114,7 +119,6 @@ function ItemsList(props) {
             payload
           )
           .then((response) => {
-            console.log("Idhaaaarrr");
             const updatedItemsList = items.map((item) =>
               item.itemName === el.itemName && item.zoneName === el.zoneName
                 ? { ...item, count: newQuantity }
@@ -131,7 +135,26 @@ function ItemsList(props) {
     });
     setItems(updatedItems);
   }
-
+  async function addItems (value){
+    items.push(value);
+    setItems(items);
+    const payload = {
+      name:Cookies.get("name"),
+      email:Cookies.get("email"),
+      zoneName:value.zoneName,
+      itemName:value.itemName,
+      count:value.count
+    }
+    axios.post("https://custom-inventory-po3oww4fuq-wl.a.run.app/item/add",payload)
+    .then((res)=>{
+      if(res.data.message=="OK"){
+        alert(`Item: ${value.itemName} added Successfully!`);
+      }
+    })
+    .catch((error)=>{
+      alert(`Item not added! Something went wrong`);
+    })
+  }
   function handleIncreaseQuantity(zone, item, count) {
     const updatedItems = items.map((el) => {
       if (el.itemName === item && el.zoneName === zone) {
@@ -172,8 +195,12 @@ function ItemsList(props) {
   }
   return (
     <div className="itemsList">
+      <div className="header">
       <h1 className="storeHeading">General Store</h1>
-
+      <Button variant="primary" class="btn btn-primary float-right" onClick={()=>setModelShow(true)}>
+        Add Items
+      </Button>
+      </div>
       <Button id="hide-on-mobile" onClick={() => props.handleShow()}>
         Zones
       </Button>
@@ -192,6 +219,12 @@ function ItemsList(props) {
           Search
         </Button>
       </InputGroup>
+      <AddItemModel
+        show={modelShow}
+        itemAdder={addItems}
+        zones={zones}
+        onHide={() => setModelShow(false)}
+      />
 
       {items.length === 0 ? (
         <h2 className="no-availability"> No items available for this zone.</h2>
@@ -366,6 +399,7 @@ function ItemsList(props) {
           </tbody>
         </Table>
       )}
+      
     </div>
   );
 }
