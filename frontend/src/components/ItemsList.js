@@ -13,10 +13,10 @@ import AddItemModel from "./AddItemModel";
 function ItemsList(props) {
   const [searchItem, setSearchItem] = useState("");
   const [items, setItems] = useState(props.items);
-  const [zones,setZones]= useState(props.zones);
-  const [modelShow,setModelShow] = React.useState(false);
+  const [zones, setZones] = useState(props.zones);
+  const [modelShow, setModelShow] = React.useState(false);
   console.log(zones);
-  console.log(items)
+  console.log(items);
   function handleSearch() {
     if (!(searchItem === "")) {
       const newItemsList = items.filter((el) => el.name.includes(searchItem));
@@ -32,7 +32,7 @@ function ItemsList(props) {
     console.log(props.items);
     setItems(props.items);
     setZones(props.zones);
-  }, [props.items,props.zones]);
+  }, [props.items, props.zones]);
 
   const fetchUpdatedItems = () => {
     const name = Cookies.get("name");
@@ -119,7 +119,6 @@ function ItemsList(props) {
             payload
           )
           .then((response) => {
-            console.log("Idhaaaarrr");
             const updatedItemsList = items.map((item) =>
               item.itemName === el.itemName && item.zoneName === el.zoneName
                 ? { ...item, count: newQuantity }
@@ -136,25 +135,33 @@ function ItemsList(props) {
     });
     setItems(updatedItems);
   }
-  async function addItems (value){
+  async function addItems(value) {
     items.push(value);
     setItems(items);
     const payload = {
-      name:Cookies.get("name"),
-      email:Cookies.get("email"),
-      zoneName:value.zoneName,
-      itemName:value.itemName,
-      count:value.count
-    }
-    axios.post("https://custom-inventory-po3oww4fuq-wl.a.run.app/item/add",payload)
-    .then((res)=>{
-      if(res.data.message=="OK"){
-        alert(`Item: ${value.itemName} added Successfully!`);
-      }
-    })
-    .catch((error)=>{
-      alert(`Item not added! Something went wrong`);
-    })
+      name: Cookies.get("name"),
+      email: Cookies.get("email"),
+      zoneName: value.zoneName,
+      itemName: value.itemName,
+      count: value.count,
+    };
+    axios
+      .post(
+        "https://custom-inventory-po3oww4fuq-wl.a.run.app/item/add",
+        payload
+      )
+      .then((res) => {
+        if (res.data.message == "OK") {
+          Swal.fire(
+            `Item: ${value.itemName} added Successfully!`,
+            "",
+            "success"
+          );
+        }
+      })
+      .catch((error) => {
+        Swal.fire(`Item not added! Something went wrong`, "", "error");
+      });
   }
   function handleIncreaseQuantity(zone, item, count) {
     const updatedItems = items.map((el) => {
@@ -197,10 +204,14 @@ function ItemsList(props) {
   return (
     <div className="itemsList">
       <div className="header">
-      <h1 className="storeHeading">General Store</h1>
-      <Button variant="primary" class="btn btn-primary float-right" onClick={()=>setModelShow(true)}>
-        Add Items
-      </Button>
+        <h1 className="storeHeading">General Store</h1>
+        <Button
+          variant="primary"
+          class="btn btn-primary float-right"
+          onClick={() => setModelShow(true)}
+        >
+          Add Items
+        </Button>
       </div>
       <Button id="hide-on-mobile" onClick={() => props.handleShow()}>
         Zones
@@ -400,7 +411,6 @@ function ItemsList(props) {
           </tbody>
         </Table>
       )}
-      
     </div>
   );
 }
