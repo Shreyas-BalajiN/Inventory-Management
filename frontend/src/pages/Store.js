@@ -59,7 +59,7 @@ function Store() {
             </Offcanvas.Body>
           </Offcanvas>
         </div>
-        <ItemsList items={items} handleShow={handleShow} selectedZone={zone} />
+        <ItemsList zones={zones} items={items} handleShow={handleShow} selectedZone={zone} />
       </div>
     </div>
   );
