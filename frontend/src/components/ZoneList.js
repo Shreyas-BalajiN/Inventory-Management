@@ -42,7 +42,7 @@ function ZoneList(props) {
             )
             .then((resp) => {
               if (resp.data.message === "OK") {
-                console.log(resp.data);
+                // console.log(resp.data);
                 // setZones(resp.data.data.zones);
               }
             })
