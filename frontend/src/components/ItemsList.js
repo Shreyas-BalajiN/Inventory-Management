@@ -15,16 +15,19 @@ function ItemsList(props) {
   const [items, setItems] = useState(props.items);
   const [zones, setZones] = useState(props.zones);
   const [modelShow, setModelShow] = React.useState(false);
-  console.log(zones);
-  console.log(items);
+  const [storeName, setStoreName] = useState(Cookies.get("name"));
+  const [email, setEmail] = useState(Cookies.get("email"));
+
   function handleSearch() {
-    if (!(searchItem === "")) {
-      const newItemsList = items.filter((el) => el.name.includes(searchItem));
-      if (newItemsList.length === 0) {
-      }
-      setItems(newItemsList);
-    } else {
+    if (!searchItem.trim()) {
       setItems(props.items);
+    } else {
+      const searchTerm = searchItem.toLowerCase();
+      const newItemsList = props.items.filter((el) =>
+        el.itemName.toLowerCase().includes(searchTerm)
+      );
+
+      setItems(newItemsList);
     }
   }
 
@@ -47,7 +50,6 @@ function ItemsList(props) {
         payload
       )
       .then((response) => {
-        console.log("Idhaaaarrr");
         // console.log(response.data);
         setItems(response.data.data.items);
       })
@@ -204,7 +206,9 @@ function ItemsList(props) {
   return (
     <div className="itemsList">
       <div className="header">
-        <h1 className="storeHeading">General Store</h1>
+        <h1 className="storeHeading">
+          Store: {storeName} - {props.selectedZone}
+        </h1>
         <Button
           variant="primary"
           class="btn btn-primary float-right"

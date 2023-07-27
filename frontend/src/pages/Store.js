@@ -30,7 +30,7 @@ function Store() {
       )
       .then((resp) => {
         if (resp.data.message === "OK") {
-          console.log(resp.data.data.zones);
+          // console.log(resp.data.data.zones);
           setZones(resp.data.data.zones);
           setItems(resp.data.data.items);
         }
@@ -41,7 +41,7 @@ function Store() {
   }, []);
 
   const zoneSetter = (z) => {
-    console.log(`Zone set to ${z}`);
+    // console.log(`Zone set to ${z}`);
     setZone(z);
   };
   return (
@@ -59,7 +59,12 @@ function Store() {
             </Offcanvas.Body>
           </Offcanvas>
         </div>
-        <ItemsList zones={zones} items={items} handleShow={handleShow} selectedZone={zone} />
+        <ItemsList
+          zones={zones}
+          items={items}
+          handleShow={handleShow}
+          selectedZone={zone}
+        />
       </div>
     </div>
   );
