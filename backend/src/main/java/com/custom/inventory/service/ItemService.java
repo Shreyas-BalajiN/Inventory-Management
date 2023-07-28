@@ -5,7 +5,6 @@ import com.custom.inventory.model.Store;
 import com.custom.inventory.model.Zone;
 import com.custom.inventory.protocol.RequestItem;
 import com.custom.inventory.repository.StoreRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,25 +18,28 @@ public class ItemService {
         this.storeRepository = storeRepository;
     }
 
-    public Zone updateItem(RequestItem requestItem){
+    public Zone updateItem(RequestItem requestItem) {
         Store store = storeRepository.findStore(requestItem.getName(), requestItem.getEmail());
 
-        Zone zone = store.getZones().stream().filter(z -> z.getZoneName().equalsIgnoreCase(requestItem.getZoneName())).toList().get(0);
+        Zone zone = store.getZones().stream().filter(z -> z.getZoneName().equalsIgnoreCase(requestItem.getZoneName()))
+                .toList().get(0);
 
-        List<Item> items = zone.getItems().stream().filter(i -> i.getItemName().equalsIgnoreCase(requestItem.getItemName())).toList();
+        List<Item> items = zone.getItems().stream()
+                .filter(i -> i.getItemName().equalsIgnoreCase(requestItem.getItemName())).toList();
 
-        if(items.isEmpty()){
+        if (items.isEmpty()) {
             storeRepository.addItemToZone(requestItem);
-        }else{
+        } else {
             storeRepository.updateItemCountInZone(requestItem);
         }
 
         Store store1 = storeRepository.findStore(requestItem.getName(), requestItem.getEmail());
 
-        return store1.getZones().stream().filter(z -> z.getZoneName().equalsIgnoreCase(requestItem.getZoneName())).toList().get(0);
+        return store1.getZones().stream().filter(z -> z.getZoneName().equalsIgnoreCase(requestItem.getZoneName()))
+                .toList().get(0);
     }
 
-    public void deleteItem(RequestItem requestItem){
+    public void deleteItem(RequestItem requestItem) {
         storeRepository.deleteItem(requestItem);
     }
 }
