@@ -53,4 +53,7 @@ public class Store {
         return zones;
     }
 
+    public void setZones(List<Zone> zones) {
+        this.zones = zones;
+    }
 }
