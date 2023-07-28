@@ -32,19 +32,23 @@ public class StoreRepository {
         return mongoTemplate.findOne(query, Store.class);
     }
 
-    public void createStore(RequestStore requestStore){
+    public Store createStore(RequestStore requestStore) {
 
         Store newStore = new Store(requestStore.getName(), requestStore.getEmail(), new ArrayList<>());
         mongoTemplate.insert(newStore);
+        return newStore;
     }
 
-    public void addZone(RequestZone requestZone){
-        Pattern namePattern = Pattern.compile("^" + requestZone.getName()+ "$",Pattern.CASE_INSENSITIVE);
-        Pattern emailPattern = Pattern.compile("^" + requestZone.getEmail()+ "$", Pattern.CASE_INSENSITIVE);
+    public void addZone(RequestZone requestZone) {
+        Pattern namePattern = Pattern.compile("^" + requestZone.getName() + "$", Pattern.CASE_INSENSITIVE);
+        Pattern emailPattern = Pattern.compile("^" + requestZone.getEmail() + "$", Pattern.CASE_INSENSITIVE);
         Query query = new Query(Criteria.where("name").regex(namePattern).and("email").regex(emailPattern));
 
         String zoneName = requestZone.getZoneName();
-        Zone newZone = new Zone(zoneName.isEmpty() ? zoneName : String.join("", zoneName.substring(0, 1).toUpperCase(), zoneName.substring(1).toLowerCase()), new ArrayList<>());
+        Zone newZone = new Zone(
+                zoneName.isEmpty() ? zoneName
+                        : String.join("", zoneName.substring(0, 1).toUpperCase(), zoneName.substring(1).toLowerCase()),
+                new ArrayList<>());
 
         Update update = new Update().push("zones", newZone);
 
@@ -52,15 +56,18 @@ public class StoreRepository {
     }
 
     public void addItemToZone(RequestItem requestItem) {
-        Pattern namePattern = Pattern.compile("^" + requestItem.getName()+ "$", Pattern.CASE_INSENSITIVE);
-        Pattern emailPattern = Pattern.compile("^" + requestItem.getEmail()+ "$", Pattern.CASE_INSENSITIVE);
-        Pattern zoneNamePattern = Pattern.compile("^" + requestItem.getZoneName()+ "$", Pattern.CASE_INSENSITIVE);
+        Pattern namePattern = Pattern.compile("^" + requestItem.getName() + "$", Pattern.CASE_INSENSITIVE);
+        Pattern emailPattern = Pattern.compile("^" + requestItem.getEmail() + "$", Pattern.CASE_INSENSITIVE);
+        Pattern zoneNamePattern = Pattern.compile("^" + requestItem.getZoneName() + "$", Pattern.CASE_INSENSITIVE);
         Query query = new Query(Criteria.where("name").regex(namePattern)
                 .and("email").regex(emailPattern)
                 .and("zones.zoneName").regex(zoneNamePattern));
 
         String itemName = requestItem.getItemName();
-        Item newItem = new Item(itemName.isEmpty() ? itemName : String.join("", itemName.substring(0, 1).toUpperCase(), itemName.substring(1).toLowerCase()), requestItem.getCount());
+        Item newItem = new Item(
+                itemName.isEmpty() ? itemName
+                        : String.join("", itemName.substring(0, 1).toUpperCase(), itemName.substring(1).toLowerCase()),
+                requestItem.getCount());
 
         Update update = new Update().push("zones.$.items", newItem);
 
@@ -68,10 +75,10 @@ public class StoreRepository {
     }
 
     public void updateItemCountInZone(RequestItem requestItem) {
-        Pattern namePattern = Pattern.compile("^" + requestItem.getName()+ "$", Pattern.CASE_INSENSITIVE);
-        Pattern emailPattern = Pattern.compile("^" + requestItem.getEmail()+ "$", Pattern.CASE_INSENSITIVE);
-        Pattern zoneNamePattern = Pattern.compile("^" + requestItem.getZoneName()+ "$", Pattern.CASE_INSENSITIVE);
-        Pattern itemNamePattern = Pattern.compile("^" + requestItem.getItemName()+ "$", Pattern.CASE_INSENSITIVE);
+        Pattern namePattern = Pattern.compile("^" + requestItem.getName() + "$", Pattern.CASE_INSENSITIVE);
+        Pattern emailPattern = Pattern.compile("^" + requestItem.getEmail() + "$", Pattern.CASE_INSENSITIVE);
+        Pattern zoneNamePattern = Pattern.compile("^" + requestItem.getZoneName() + "$", Pattern.CASE_INSENSITIVE);
+        Pattern itemNamePattern = Pattern.compile("^" + requestItem.getItemName() + "$", Pattern.CASE_INSENSITIVE);
         Query query = new Query(Criteria.where("name").regex(namePattern)
                 .and("email").regex(emailPattern)
                 .and("zones.zoneName").regex(zoneNamePattern)
@@ -89,7 +96,8 @@ public class StoreRepository {
         Query query = new Query(Criteria.where("name").regex(namePattern).and("email").regex(emailPattern));
 
         String zoneName = requestZone.getZoneName();
-        Zone zoneToDelete = new Zone(zoneName.isEmpty() ? zoneName : String.join("", zoneName.substring(0, 1).toUpperCase(), zoneName.substring(1).toLowerCase()));
+        Zone zoneToDelete = new Zone(zoneName.isEmpty() ? zoneName
+                : String.join("", zoneName.substring(0, 1).toUpperCase(), zoneName.substring(1).toLowerCase()));
 
         Update update = new Update().pull("zones", zoneToDelete);
 
@@ -97,16 +105,17 @@ public class StoreRepository {
     }
 
     public void deleteItem(RequestItem requestItem) {
-        Pattern namePattern = Pattern.compile("^" + requestItem.getName()+ "$", Pattern.CASE_INSENSITIVE);
-        Pattern emailPattern = Pattern.compile("^" + requestItem.getEmail()+ "$", Pattern.CASE_INSENSITIVE);
-        Pattern zoneNamePattern = Pattern.compile("^" + requestItem.getZoneName()+ "$", Pattern.CASE_INSENSITIVE);
+        Pattern namePattern = Pattern.compile("^" + requestItem.getName() + "$", Pattern.CASE_INSENSITIVE);
+        Pattern emailPattern = Pattern.compile("^" + requestItem.getEmail() + "$", Pattern.CASE_INSENSITIVE);
+        Pattern zoneNamePattern = Pattern.compile("^" + requestItem.getZoneName() + "$", Pattern.CASE_INSENSITIVE);
         Query query = new Query(Criteria.where("name").regex(namePattern)
                 .and("email").regex(emailPattern)
                 .and("zones.zoneName").regex(zoneNamePattern));
 
         String itemName = requestItem.getItemName();
-        Item itemToDelete = new Item(itemName.isEmpty() ? itemName : String.join("", itemName.substring(0, 1).toUpperCase(), itemName.substring(1).toLowerCase()));
-        Update update = new Update().pull("zones.$.items",itemToDelete);
-        mongoTemplate.updateFirst(query,update,Store.class);
+        Item itemToDelete = new Item(itemName.isEmpty() ? itemName
+                : String.join("", itemName.substring(0, 1).toUpperCase(), itemName.substring(1).toLowerCase()));
+        Update update = new Update().pull("zones.$.items", itemToDelete);
+        mongoTemplate.updateFirst(query, update, Store.class);
     }
 }
